@@ -34,5 +34,63 @@
     微信JS-SDK：开发者在网页上通过JavaScript代码使用微信原生功能的工具包。录制播放微信语音、监听微信分享、上传手机本地图片、拍照等。
 
 5. 开发者规范
+    
+    appID:第三方用户调用唯一凭证；
+    appsecret:第三方永不唯一凭证密钥；
+    grant_type:获取accent_token填写client_credential
+    URL:
+        一旦提交微信会给URL发送一个get请求，验证接口的有效性。
+    Token:
+    nonce：随机数
+    echostr：随机字符串
+    timestamp：时间戳
+    signature：微信加密签名，
+        签名生成：
+            需要timestamp,token,nonce(随机字符串)；
+            将三个字段排序，进行sha1加密；
+            加密字符串与signature对比，标识请求来源于微信；
 
+    access_token:
+        公众号的全局唯一接口调用凭据。
+        公众号和小程序均可以使用AppID和AppSecret调用本接口来获取access_token;
+        调用接口时，请登录“微信公众平台-开发-基本配置”提前将服务器IP地址添加到IP白名单中，点击查看设置方法，否则将无法调用成功。小程序无需配置IP白名单;
+
+        存储512MB 有效期2小时 定时刷新
+        有效期：expires_in
+
+        get
+        https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=APPID&secret=APPSECRET
+
+    token：
+        验证流程：
+            自己的服务器和微信服务器进行绑定，提交的url为token验证的接口，
+            微信服务器会把echostr发到自己的服务器，然后我们的服务器进行token验证，看是否匹配。
+            匹配后，将echostr返回给微信服务器，服务器即绑定成功。
+            自己的服务器和微信服务器的消息手法都是通过验证token那个接口实现的。
+
+    AccessToken中控服务器：
+        提供主动刷新和被动刷新机制来刷新accessToken并存储，提供给业务逻辑有效的accessToken；
+        避免业务逻辑并发获取access_token，互相覆盖；
+    
+    API-Proxy服务器：
+        转一与微信API对接
+
+    服务器保证5秒内处理回复：success或“”
+
+    http:// https:// 开头 ，支持80端口和443端口
+
+```
+```
+JS-SDK
+    微信公众平台面向网页开发者提供的基于微信内的网页开发工具包。
+
+    使用步骤：
+        1、绑定域名；
+        2、引入JS文件；
+            http://res.wx.qq.com/open/js/jweixin-1.4.0.js或http://res2.wx.qq.com/open/js/jweixin-1.4.0.js
+
+        3、通过config接口注入权限验证配置；
+        4、通过ready接口处理成功验证；
+        5、通过error接口处理失败验证；
+        
 ```

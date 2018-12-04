@@ -40,7 +40,6 @@
     grant_type:获取accent_token填写client_credential
     URL:
         一旦提交微信会给URL发送一个get请求，验证接口的有效性。
-    Token:
     nonce：随机数
     echostr：随机字符串
     timestamp：时间戳
@@ -49,6 +48,31 @@
             需要timestamp,token,nonce(随机字符串)；
             将三个字段排序，进行sha1加密；
             加密字符串与signature对比，标识请求来源于微信；
+            ```
+                const crypto=require('crypto')// 加密模块
+                module.exports={
+                    authentication:function(weixinData){
+                        const token=weixinData.token
+                        const signature=weixinData.signature
+                        const timestamp=weixinData.timestamp
+                        const nonce=weixinData.nonce
+
+                        //排序
+                        const sortArr=[token,timestamp,nonce]
+                        sortArr.sort() 
+                        
+                        //转换为字符串
+                        const sortArrStr=sortArr.join("")
+                        
+                        //加密
+                        const hashCode=crypto.createHash('sha1')//加密类型
+                        const result=hashCode.update(sortArrStr,'utf-8').digest('hex')
+
+                        return result===signature
+                    }
+                }
+
+            ```
 
     access_token:
         公众号的全局唯一接口调用凭据。
